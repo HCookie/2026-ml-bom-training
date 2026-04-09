@@ -1,0 +1,13 @@
+[project]
+name = "2026-ml-bom-training"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "anemoi-datasets==0.5.35",
+    "anemoi-graphs==0.9.1",
+    "anemoi-inference==0.10.0",
+    "anemoi-models==0.13.1",
+    "anemoi-training==0.11.0",
+    "anemoi-transform==0.1.29",
+    "torch==2.9",
+]
