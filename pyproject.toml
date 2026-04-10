@@ -9,5 +9,12 @@ dependencies = [
     "anemoi-models==0.13.1",
     "anemoi-training==0.11.0",
     "anemoi-transform==0.1.29",
+    #"flash-attn",
+    "ipykernel>=7.2.0",
+    "jupyter>=1.1.1",
+    "mlflow>=3.11.1",
     "torch==2.9",
 ]
+
+[tool.uv.sources]
+flash-attn = { url = "https://github.com/cathalobrien/get-flash-attn/releases/download/v0.1-alpha/flash_attn-2.7.4.post1+cu12torch2.9cxx11abiFALSE-cp312-cp312-linux_x86_64.whl" }
