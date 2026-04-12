@@ -33,8 +33,8 @@ dataloader:
     datasets:
       data:
         dataset_config:
-          dataset: ${dataloader.dataset}
           # Limit parameters for quick training
+          dataset: ${dataloader.dataset}
           # ACTIVITY: Explore what is available in the dataset, and alter this selection as desired
           select:  ['z_1000', 'z_500', 'z_700', 'z_300', '2t', 't_850', 'tcw', 'z_250', 'lsm', 'z', 'cp', 'tp', 'cos_latitude', 'cos_longitude', 'sin_latitude', 'sin_longitude', 'cos_julian_day', 'cos_local_time', 'sin_julian_day', 'sin_local_time', 'insolation', 'lsm', 'sdor', 'slor', 'z']
         start: null
@@ -47,7 +47,7 @@ dataloader:
         start: 2021
         end: 2021
 
-  batch_size:
+  batch_size: # Set to 1 to keep memory requirements low
     training: 1
     validation: 1
   limit_batches:
@@ -56,9 +56,11 @@ dataloader:
 
 # Model configuration for ensemble training
 model:
-  num_channels: 128 # ACTIVITY: This is the hidden dimension of the model, and is a key determinant of model capacity. You can increase this for better performance, but it will increase VRAM usage and decrease speed.
+  # ACTIVITY: This is the hidden dimension of the model, and is a key determinant of model capacity. You can increase this for better performance, but it will increase VRAM usage and decrease speed.
+  num_channels: 128
   condition_on_residual: False
 
+  # ACTIVITY: Explore what other models can be applied
   model:
     _target_: anemoi.models.models.AnemoiEnsModelEncProcDec
 
@@ -81,8 +83,14 @@ model:
   # Processor with conditional layer norm
   processor:
     # ACTIVITY: The processor is the core of the model, and is where most architectural changes would be made. You can swap out the TransformerProcessor for a GraphTransformerProcessor for example, or alter the number of layers, attention implementation, etc.
+    # ACTIVITY: The processor is the core of the model, and is where most architectural changes would be made. You can swap out the TransformerProcessor for a GraphTransformerProcessor for example, or alter the number of layers, attention implementation, etc.
     num_layers: 8
     attention_implementation: scaled_dot_product_attention
+    num_chunks: 4
+    mlp_hidden_ratio: 4 # GraphTransformer or Transformer only
+    num_heads: 16 # GraphTransformer or Transformer only
+    window_size: 512
+
     layer_kernels:
       LayerNorm:
         _target_: anemoi.models.layers.normalization.ConditionalLayerNorm
@@ -98,6 +106,7 @@ training:
 
   training_loss:
     datasets:
+      # ACTIVITY: Explore available losses, and ways to configure them
       data: # user-defined key in data
         # loss class to initialise, can be anything subclassing torch.nn.Module
         # To train without multiscale loss, set it to the desired loss directly

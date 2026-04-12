@@ -1,0 +1,152 @@
+defaults:
+- data: zarr
+- dataloader: native_grid
+- diagnostics: evaluation
+- system: pbs
+- graph: encoder_decoder_only
+- model: transformer
+- training: default
+- _self_
+
+config_validation: False
+
+# System configuration for training
+system:
+  output:
+    root: /scratch/${oc.env:PROJECT}/${oc.env:USER}/anemoi-output/
+  input:
+    graph: null
+    dataset: /g/data/ma14/anemoi_training/dataset/era5/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
+  hardware: # NOTE: If using more GPUS, this will need to be updated
+    accelerator: auto
+    num_gpus_per_model: 1 # GPUS per individual model, use to shard
+
+# Data configuration
+data:
+  resolution: o48
+  timestep: 6h
+
+# Dataloader configuration
+dataloader:
+  training:
+    datasets:
+      data:
+        dataset_config:
+          dataset: ${dataloader.dataset}
+          # Limit parameters for quick training
+          # ACTIVITY: Explore what is available in the dataset, and alter this selection as desired
+          select:  ['z_1000', 'z_500', 'z_700', 'z_300', '2t', 't_850', 'tcw', 'z_250', 'lsm', 'z', 'cp', 'tp', 'cos_latitude', 'cos_longitude', 'sin_latitude', 'sin_longitude', 'cos_julian_day', 'cos_local_time', 'sin_julian_day', 'sin_local_time', 'insolation', 'lsm', 'sdor', 'slor', 'z']
+        start: null
+        end: 2020
+  
+  validation:
+    datasets:
+      data:
+        dataset_config: ${dataloader.training.datasets.data.dataset_config}
+        start: 2021
+        end: 2021
+
+  batch_size:
+    training: 1
+    validation: 1
+  limit_batches:
+    training: null
+    validation: 100
+
+# Model configuration for training
+model:
+  # ACTIVITY: This is the hidden dimension of the model, and is a key determinant of model capacity. You can increase this for better performance, but it will increase VRAM usage and decrease speed.
+  num_channels: 128
+  condition_on_residual: False
+
+  # ACTIVITY: Explore what other models can be applied
+  model:
+    _target_: anemoi.models.models.AnemoiModelEncProcDec
+
+  # DUE TO V100 CUDA ISSUES, USE PYTORCH-GEOMETRIC
+  encoder:
+    graph_attention_backend: 'pyg'
+  decoder:
+    graph_attention_backend: 'pyg'
+
+  # Processor with conditional layer norm
+  processor:
+    # ACTIVITY: The processor is the core of the model, and is where most architectural changes would be made. You can swap out the TransformerProcessor for a GraphTransformerProcessor for example, or alter the number of layers, attention implementation, etc.
+    num_layers: 8
+    attention_implementation: scaled_dot_product_attention
+    num_chunks: 4
+    mlp_hidden_ratio: 4 # GraphTransformer or Transformer only
+    num_heads: 16 # GraphTransformer or Transformer only
+    window_size: 512
+
+# Training configuration for single training
+training:
+  # select model task
+  model_task: anemoi.training.train.tasks.GraphForecaster
+
+  training_loss:
+    datasets:
+      # ACTIVITY: Explore available losses, and ways to configure them
+      data: # user-defined key in data
+        # loss class to initialise
+        _target_: anemoi.training.losses.MSELoss
+        # Scalers to include in loss calculation
+        # A selection of available scalers are listed in training/scalers.
+        # '*' is a valid entry to use all `scalers` given, if a scaler is to be excluded
+        # add `!scaler_name`, i.e. ['*', '!scaler_1'], and `scaler_1` will not be added.
+        scalers: ['pressure_level', 'general_variable', 'node_weights', 'time_steps']
+        ignore_nans: False
+
+  # Fair CRPS validation metrics
+  validation_metrics:
+    datasets:
+      data: # user-defined key in data
+        # loss class to initialise
+        mse:
+          _target_: anemoi.training.losses.MSELoss
+          # Scalers to include in loss calculation
+          # Cannot scale over the variable dimension due to possible remappings.
+          # Available scalers include:
+          # - 'loss_weights_mask': Giving imputed NaNs a zero weight in the loss function
+          # Use the `scale_validation_metrics` section to variable scale.
+          scalers: ["node_weights", "time_steps"]
+          # other kwargs
+          ignore_nans: True
+
+  # select strategy
+  strategy:
+    _target_: anemoi.training.distributed.strategy.DDPGroupStrategy
+    num_gpus_per_model: ${system.hardware.num_gpus_per_model}
+    read_group_size: ${dataloader.read_group_size}
+
+  # Training parameters
+  # ACTIVITY: Extend to properly train the model
+  max_steps: 1000  # Short run for demo
+  lr:
+    rate: 1e-3  # effective_lr=1e-3, effective_bs=16
+    warmup: 1000
+    iterations: ${training.max_steps}
+    min: 3e-7
+
+# Diagnostics configuration
+diagnostics:
+  callbacks: []
+  plot:
+    callbacks:
+      # Add plot callbacks here
+      - _target_: anemoi.training.diagnostics.callbacks.plot.PlotLoss
+        # group parameters by categories when visualizing contributions to the loss
+        # one-parameter groups are possible to highlight individual parameters
+        dataset_names: ["data"] #TODO can make this a default in pydantic and remove here
+        parameter_groups:
+          moisture: [tp, cp, tcw]
+          sfc_wind: [10u, 10v]
+        every_n_batches: ${diagnostics.plot.frequency.batch}
+  log:
+    mlflow:
+      system: True
+      enabled: True
+      offline: True
+      tracking_uri: file://${system.output.logs.mlflow}
+      experiment_name: ${oc.env:USER}-single-training
+
