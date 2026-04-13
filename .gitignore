@@ -1,1 +1,8 @@
 .venv
+
+*/outputs
+
+*.[oe]*
+*.ckpt
+*.npz
+__pycache__/
