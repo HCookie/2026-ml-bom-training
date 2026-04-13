@@ -50,8 +50,8 @@ dataloader:
     training: 1
     validation: 1
   limit_batches:
-    training: null
-    validation: 100
+    training: 20 # Set short for demo
+    validation: 10
 
 # Model configuration for training
 model:
@@ -124,7 +124,7 @@ training:
 
   # Training parameters
   # ACTIVITY: Extend to properly train the model
-  max_steps: 1600  # Short run for demo
+  max_steps: 200  # Short run for demo
   # max_epochs: null
   lr:
     rate: 1e-3  # effective_lr=1e-3, effective_bs=16
@@ -140,7 +140,7 @@ diagnostics:
       - _target_: anemoi.training.diagnostics.callbacks.plot.PlotLoss
         # group parameters by categories when visualizing contributions to the loss
         # one-parameter groups are possible to highlight individual parameters
-        dataset_names: ["data"] #TODO can make this a default in pydantic and remove here
+        dataset_names: ["data"]
         parameter_groups:
           moisture: [tp, cp, tcw]
           sfc_wind: [10u, 10v]
