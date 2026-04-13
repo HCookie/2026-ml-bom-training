@@ -10,10 +10,10 @@ This repo contains code examples and resources for use in the Anemoi training tu
 │   ├── configs/                     # Training configuration files (YAML)
 │   ├── training_aifs-single.ipynb   # Train a deterministic AIFS model
 │   ├── training_aifs-ens.ipynb      # Train an ensemble AIFS model
-│   ├── inference_your_ckpt_o48.ipynb # Run inference on your own checkpoint
 │   └── helpers.py
 ├── 2-run-AIFS/                      # Run pre-trained AIFS inference
 │   ├── inference_aifs-ens.ipynb     # Ensemble inference notebook
+│   ├── inference_aifs-single.ipynb  # Single inference notebook
 │   └── helpers.py
 ├── Extra/                           # Optional supplementary exercises
 │   ├── 1-ml-basics/                 # ML fundamentals with surface observations
