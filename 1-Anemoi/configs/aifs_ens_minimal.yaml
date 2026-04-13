@@ -80,6 +80,8 @@ model:
   decoder:
     graph_attention_backend: 'pyg'
 
+  compile: [] # Remove compilation due to V100 CUDA ISSUES
+
   # Processor with conditional layer norm
   processor:
     # ACTIVITY: The processor is the core of the model, and is where most architectural changes would be made. You can swap out the TransformerProcessor for a GraphTransformerProcessor for example, or alter the number of layers, attention implementation, etc.
