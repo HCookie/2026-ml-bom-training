@@ -1,0 +1,13 @@
+
+
+checkpoint: PATH_HERE
+
+date: 2020-01-01 # Must be within the dataset range
+
+input:
+  dataset: /g/data/dk92/data/aifs-ens/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
+
+# To save the output of the inference, you can specify an output path and type here. By default, this will not be saved.
+
+# output:
+  # netcdf: inference_output.nc

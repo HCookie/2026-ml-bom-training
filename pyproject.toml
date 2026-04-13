@@ -9,10 +9,14 @@ dependencies = [
     "anemoi-models==0.13.1",
     "anemoi-training==0.11.0",
     "anemoi-transform==0.1.29",
-    #"flash-attn",
+    "flash-attn",
+    "cartopy>=0.25.0",
+    "earthkit-data[ecmwf-opendata]>=0.19.3",
+    "earthkit-plots>=0.6.1",
+    "eccodeslib>=2.46.2.19",
     "ipykernel>=7.2.0",
     "jupyter>=1.1.1",
-    "mlflow>=3.11.1",
+    "mlflow==3.0",
     "torch==2.9",
 ]
 
