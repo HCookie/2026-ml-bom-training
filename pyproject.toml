@@ -16,8 +16,9 @@ dependencies = [
     "eccodeslib>=2.46.2.19",
     "ipykernel>=7.2.0",
     "jupyter>=1.1.1",
-    "mlflow==3.0",
+    "mlflow==3.0.1",
     "torch==2.9",
+    "nci-ipynb>=2023.11.0.3",
 ]
 
 [tool.uv.sources]
