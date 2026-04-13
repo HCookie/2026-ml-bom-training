@@ -78,15 +78,3 @@ uv run jupyter lab
 ```
 
 Navigate to the relevant section (`1-Anemoi/`, `2-run-AIFS/`, or `Extra/`) and open the notebook for your exercise.
-
-## Training (1-Anemoi)
-
-See [1-Anemoi/configs/README.md](1-Anemoi/configs/README.md) for full training instructions, including how to launch MLflow logging.
-
-Quick start:
-
-```bash
-export ANEMOI_BASE_SEED=42
-export ANEMOI_CONFIG=$PWD/configs
-uv run anemoi-training train --config-name=deterministic_minimal.yaml
-```
