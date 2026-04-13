@@ -24,7 +24,7 @@ system:
 # Data configuration
 data:
   resolution: o48
-  timestep: 6h
+  timestep: 6h # ACTIVITY: This is the timestep of the model, and must be at least the same as the dataset timestep. Some applications may benefit from using a larger timestep, e.g. 12h or 24h.
 
 # Dataloader configuration
 dataloader:
@@ -34,7 +34,7 @@ dataloader:
         dataset_config:
           dataset: ${dataloader.dataset}
           # Limit parameters for quick training
-          # ACTIVITY: Explore what is available in the dataset, and alter this selection as desired
+          # ACTIVITY: Explore what is available in the dataset, using `anemoi-datasets inspect DATASET_NAME`, and alter this selection as desired
           select:  ['z_1000', 'z_500', 'z_700', 'z_300', '2t', 't_850', 'tcw', 'z_250', 'lsm', 'z', 'cp', 'tp', 'cos_latitude', 'cos_longitude', 'sin_latitude', 'sin_longitude', 'cos_julian_day', 'cos_local_time', 'sin_julian_day', 'sin_local_time', 'insolation', 'lsm', 'sdor', 'slor', 'z']
         start: null
         end: 2020
@@ -46,7 +46,7 @@ dataloader:
         start: 2021
         end: 2021
 
-  batch_size:
+  batch_size: # Set to 1 to keep memory requirements low
     training: 1
     validation: 1
   limit_batches:
@@ -59,7 +59,7 @@ model:
   num_channels: 128
   condition_on_residual: False
 
-  # ACTIVITY: Explore what other models can be applied
+  # ACTIVITY: Explore what other models can be used
   model:
     _target_: anemoi.models.models.AnemoiModelEncProcDec
 
@@ -74,8 +74,9 @@ model:
   # Processor with conditional layer norm
   processor:
     # ACTIVITY: The processor is the core of the model, and is where most architectural changes would be made. You can swap out the TransformerProcessor for a GraphTransformerProcessor for example, or alter the number of layers, attention implementation, etc.
+    _target_: anemoi.models.layers.processor.TransformerProcessor
     num_layers: 8
-    attention_implementation: scaled_dot_product_attention
+    attention_implementation: scaled_dot_product_attention # Set to sdpa for compatibility with V100, but can be set to flash_attention for faster training on newer hardware
     num_chunks: 4
     mlp_hidden_ratio: 4 # GraphTransformer or Transformer only
     num_heads: 16 # GraphTransformer or Transformer only
@@ -99,7 +100,7 @@ training:
         scalers: ['pressure_level', 'general_variable', 'node_weights', 'time_steps']
         ignore_nans: False
 
-  # Fair CRPS validation metrics
+  # Validation metrics
   validation_metrics:
     datasets:
       data: # user-defined key in data
@@ -123,7 +124,8 @@ training:
 
   # Training parameters
   # ACTIVITY: Extend to properly train the model
-  max_steps: 1000  # Short run for demo
+  max_steps: 1600  # Short run for demo
+  # max_epochs: null
   lr:
     rate: 1e-3  # effective_lr=1e-3, effective_bs=16
     warmup: 1000
@@ -135,7 +137,6 @@ diagnostics:
   callbacks: []
   plot:
     callbacks:
-      # Add plot callbacks here
       - _target_: anemoi.training.diagnostics.callbacks.plot.PlotLoss
         # group parameters by categories when visualizing contributions to the loss
         # one-parameter groups are possible to highlight individual parameters
