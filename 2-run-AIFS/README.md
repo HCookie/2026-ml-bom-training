@@ -14,7 +14,8 @@ This section covers running inference with an existing AIFS checkpoint using the
 ```
 2-run-AIFS/
 ├── inference_aifs-ens.ipynb     # Ensemble inference tutorial
-├── inference_aifs-single.ipynb     # Single inference tutorial
+├── inference_aifs-single.ipynb  # Single inference tutorial
+├── command_line.md              # Command line documentation
 └── helpers.py                   # Shared utility functions
 ```
 
