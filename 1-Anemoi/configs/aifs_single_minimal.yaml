@@ -16,7 +16,7 @@ system:
     root: /scratch/${oc.env:PROJECT}/${oc.env:USER}/anemoi-output/
   input:
     graph: null
-    dataset: /g/data/dk92/data/aifs-ens/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
+    dataset: /g/data/dk92/data/anemoi/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
   hardware: # NOTE: If using more GPUS, this will need to be updated
     accelerator: auto
     num_gpus_per_model: 1 # GPUS per individual model, use to shard
@@ -50,7 +50,7 @@ dataloader:
     training: 1
     validation: 1
   limit_batches:
-    training: 20 # Set short for demo
+    # training: 20 # Set short for demo
     validation: 10
 
 # Model configuration for training
@@ -124,7 +124,7 @@ training:
 
   # Training parameters
   # ACTIVITY: Extend to properly train the model
-  max_steps: 200  # Short run for demo
+  # max_steps: 200  # Short run for demo
   # max_epochs: null
   lr:
     rate: 1e-3  # effective_lr=1e-3, effective_bs=16

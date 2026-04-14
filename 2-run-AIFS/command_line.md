@@ -22,7 +22,7 @@ checkpoint: PATH_HERE          # Path to the .ckpt file
 date: 2020-01-01               # Forecast start date — must be within the dataset range
 
 input:
-  dataset: /g/data/dk92/data/aifs-ens/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
+  dataset: /g/data/dk92/data/anemoi/aifs-ea-an-oper-0001-mars-o48-2010-2022-6h-v1-toy.zarr
 
 # To save the output, uncomment and set an output path:
 # output:
