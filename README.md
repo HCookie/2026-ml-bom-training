@@ -50,7 +50,7 @@ Use the dk92 module
 - Module directories: /g/data/dk92/apps/Modules/modulefiles
 - Modules: anemoi/26.04
 
-### 3. Launch the job
+### 3. Launch the job
 
 Launch the session, and wait for the allocation
 
