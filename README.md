@@ -23,7 +23,43 @@ This repo contains code examples and resources for use in the Anemoi training tu
 └── uv.lock                          # Locked dependency versions
 ```
 
-## Setup
+## Clone the repository
+
+```bash
+git clone <repo-url>
+cd 2026-ml-bom-training
+```
+
+## Setup with ARE
+
+Log into [ARE](https://are.nci.org.au/)
+
+### 1. Create a jupyterlab session
+
+Create a jupyterlab session with the following compute setup
+
+- Queue: gpuvolta
+- Compute Size: 1gpu
+- Project: Use your own
+- Storage: gdata/ma14+scratch/ma14+gdata/dk92+scratch/dk92+scratch/YOUR_OWN+gdata/YOUR_OWN
+
+### 2. Configure module
+
+Use the dk92 module
+
+- Module directories: /g/data/dk92/apps/Modules/modulefiles
+- Modules: anemoi/26.04
+
+### 3. Launch the job
+
+Launch the session, and wait for the allocation
+
+
+### Running the Notebooks
+
+Navigate to the location you cloned the repo within the ARE session and navigate to the relevant section (`1-Anemoi/`, `2-run-AIFS/`, or `Extra/`) and open the notebook for your exercise.
+
+## Setup with uv
 
 Dependencies are managed with [uv](https://docs.astral.sh/uv/).
 
@@ -33,14 +69,7 @@ Dependencies are managed with [uv](https://docs.astral.sh/uv/).
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 2. Clone the repository
-
-```bash
-git clone <repo-url>
-cd 2026-ml-bom-training
-```
-
-### 3. Create the virtual environment and install dependencies
+### 2. Create the virtual environment and install dependencies
 
 ```bash
 uv sync
@@ -48,7 +77,7 @@ uv sync
 
 This will create a `.venv` directory and install all packages pinned in `uv.lock`, including PyTorch and the full Anemoi stack.
 
-### 4. Activate the environment
+### 3. Activate the environment
 
 ```bash
 source .venv/bin/activate
@@ -61,7 +90,7 @@ uv run jupyter notebook
 ANEMOI_CONFIG=$PWD/configs uv run anemoi-training train --config-name=deterministic_minimal.yaml
 ```
 
-### 5. Register the kernel with Jupyter
+### 4. Register the kernel with Jupyter
 
 ```bash
 uv run python -m ipykernel install --user --name=bom-training --display-name "BOM Training"
@@ -69,7 +98,7 @@ uv run python -m ipykernel install --user --name=bom-training --display-name "BO
 
 Then select the **BOM Training** kernel when opening notebooks.
 
-## Running the Notebooks
+### Running the Notebooks
 
 Launch JupyterLab from the repo root:
 
