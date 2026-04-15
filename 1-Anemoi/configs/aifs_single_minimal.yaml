@@ -66,8 +66,12 @@ model:
   # DUE TO V100 CUDA ISSUES, USE PYTORCH-GEOMETRIC
   encoder:
     graph_attention_backend: 'pyg'
+    num_chunks: 4
+    num_heads: 16
   decoder:
     graph_attention_backend: 'pyg'
+    num_chunks: 4
+    num_heads: 16
 
   compile: [] # Remove compilation due to V100 CUDA ISSUES
 
